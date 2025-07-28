@@ -1,6 +1,6 @@
 # OSRM NodeJS Server
 
-A high-performance NodeJS server implementation for the Open Source Routing Machine (OSRM) backend. This server provides a RESTful API for routing services with built-in metrics, logging, and clustering capabilities.
+A high-performance NodeJS server implementation for the [Open Source Routing Machine (OSRM) backend](https://github.com/Project-OSRM/osrm-backend). This server provides a RESTful API for routing services with built-in metrics, logging, and clustering capabilities.
 
 ## Features
 
