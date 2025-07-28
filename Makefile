@@ -1,6 +1,3 @@
-# IMAGE_NAME=osrm-service
-# TAG=skim
-
 build:
 	docker build -t $(IMAGE_NAME):$(TAG) -f ./Dockerfile .
 

@@ -35,38 +35,49 @@ git clone https://github.com/Project-OSRM/osrm-backend.git
 git clone https://github.com/juchengquan/osrm-node-api.git
 # Create soft links
 ln -s ./osrm-node-api/Makefile ./
-ln -s ./osrm-node-api/ ./
+ln -s ./osrm-node-api/Dockerfile ./
 ```
 
 ## Building the Docker Image
 ```bash
 IMAGE_NAME=<YOUR_IMAGE_NAME> TAG=<YOUR_TAG_NAME> \
-    make build .
+    make build
 ```
 ## (Optional) OSM Data Preprataion
 
 Take Monaco data as example (following [using-docker](https://github.com/Project-OSRM/osrm-backend?tab=readme-ov-file#using-docker)):
+
+### Download data
 ```bash
-# Download Monaco data
-wget https://download.geofabrik.de/europe/monaco-latest.osm.pbf -O ./osrm-data/monaco.osm.pbf
-# 
+# Docker image shortcut
 export IMAGE_NAME=<YOUR_IMAGE_NAME>
 export TAG=<YOUR_TAG_NAME>
+# Filename shortcut
+export FILE_NAME=monaco
+# Download Monaco data
+wget https://download.geofabrik.de/europe/monaco-latest.osm.pbf -O ./osrm-data/${FILE_NAME}.osm.pbf
+
+```
+### Data Processing on `MLD` or `CH` ALgorithm
+```bash
 # osrm-extract:
-FILE_NAME=monaco make extract 
+make extract 
 # MLD: osrm-partition + osrm-customize
-FILE_NAME=monaco make partition && FILE_NAME=monaco make customize
+make partition && make customize
 # CH: osrm-contract
-FILE_NAME=monaco make contract
+make contract
 ```
 
 ## Run the Docker instance
 ```bash
-IMAGE_NAME=<YOUR_IMAGE_NAME> TAG=<YOUR_TAG_NAME> \
-OSRM_ALGORITHM=CH FILE_NAME=monaco \
-    make run 
+# Docker image shortcut
+export IMAGE_NAME=<YOUR_IMAGE_NAME>
+export TAG=<YOUR_TAG_NAME>
+# Filename shortcut
+export FILE_NAME=monaco
+export OSRM_ALGORITHM=CH # or OSRM_ALGORITHM=MLD
+make run 
 ```
-
 
 ## Contributing
 
