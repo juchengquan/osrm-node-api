@@ -32,7 +32,7 @@ mkdir -p osrm-data
 # Clone osrm-backend
 git clone https://github.com/Project-OSRM/osrm-backend.git
 # Clone this repo
-git clone <THIS_REPO> 
+git clone https://github.com/juchengquan/osrm-node-api.git
 # Create soft links
 ln -s ./osrm-node-api/Makefile ./
 ln -s ./osrm-node-api/ ./
