@@ -88,5 +88,8 @@ WORKDIR /osrm-node-api
 EXPOSE 8080
 EXPOSE 9090
 
-RUN yarn install
+# Production dependencies from the committed bun.lock. Bun is mounted only for
+# this step, so it is not part of the image; the server itself runs on Node.
+RUN --mount=from=oven/bun:1.4.4-slim,source=/usr/local/bin/bun,target=/usr/local/bin/bun \
+    bun install --production --frozen-lockfile
 # ENTRYPOINT ["yarn", "start"]
