@@ -10,13 +10,27 @@ import { asyncRequestParser } from "../request_parser/index.js";
 function asyncOSRMCall(osrm, payload, service_type) {
   return new Promise(function (resolve, reject) {
     try {
-      const output_format = payload["output_format"];
-      osrm[service_type](payload, { format: "json_buffer", output_format: output_format }, (err, response) => {
+      // `output_format` is this API's parameter; upstream OSRM selects the
+      // response encoding with `format` in the request options instead.
+      const output_format = payload["output_format"] || "json";
+      delete payload["output_format"];
+      payload.format = output_format;
+      // Hints are off unless asked for (the documented default of this API).
+      if (payload.generate_hints === undefined) {
+        payload.generate_hints = false;
+      }
+      // "buffer" returns raw bytes for either encoding; "json_buffer" is JSON-only.
+      const plugin_config = { format: output_format === "flatbuffers" ? "buffer" : "json_buffer" };
+      osrm[service_type](payload, plugin_config, (err, response) => {
         if (err) { // response error
           reject({message: err.message});
         } else {
-          // JSON:
-          // response = response.toString("utf-8");
+          // Upstream's Node binding strips the top-level "code" field (only
+          // osrm-routed adds it); put "code":"Ok" back so JSON responses match
+          // the OSRM HTTP API.
+          if (output_format === "json" && response.length > 2 && response[0] === 0x7b /* "{" */) {
+            response = Buffer.concat([Buffer.from('{"code":"Ok",'), response.subarray(1)]);
+          }
           resolve([response, output_format]);
         }
       });
