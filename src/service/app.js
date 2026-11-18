@@ -29,6 +29,27 @@ function configureMiddlewares(app) {
 function configureRouters(app) {
   const router = express.Router();
 
+  // Probes are registered before "/:service_type", which would otherwise
+  // treat "health" / "liveness" as unknown services and answer 400.
+
+  // Process is up and serving HTTP.
+  router.all("/health", async (req, res) => {
+    res.statusText = "Ok";
+    res.status(200).send({ code: "Ok", probe_name: "health" });
+  });
+
+  // OSRM can answer a query. OSRM snaps the points to the nearest road in
+  // whatever region is loaded, so this works for any dataset.
+  router.all("/liveness", async (req, res) => {
+    req.body = {
+      coordinates: [
+        [106.65804, 10.7904127],
+        [106.65806, 10.7904127],
+      ],
+    };
+    mountService("POST", req, res, "route");
+  });
+
   router.get("/:service_type",async (req, res) => {
     if (ServiceList.includes(req.params.service_type)) {
       mountService("GET", req, res, req.params.service_type)

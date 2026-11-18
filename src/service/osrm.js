@@ -1,4 +1,8 @@
-import OSRM from "osrm";
+// OSRM is built from source in the Docker image and loaded from OSRM_LIB
+// instead of being installed as a package: a package install copies lib/ into
+// node_modules, where upstream's lib/index.js can no longer find the
+// ../package.json it reads for OSRM.version.
+const { default: OSRM } = await import(process.env.OSRM_LIB ?? "/osrm-backend/lib/index.js");
 
 export function loadOSRMGraph(options) {
   const opts = {

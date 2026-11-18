@@ -24,6 +24,14 @@ export async function async_inputDataParser(req, param_list, request_type) {
     req_obj = parser.addBooleanParams(req_obj, "generate_hints");
     req_obj = parser.addArrayOfStringsParams(req_obj, "exclude");
     // req_obj = parser.addBooleanParams(req_obj, "skip_waypoints");
+    // OSRM expects `number` as an integer, not the query-string text
+    if (req_obj["number"] !== undefined && req_obj["number"] !== "") {
+      const number = Number(req_obj["number"]);
+      if (!Number.isInteger(number) || number < 1) {
+        throw {message: "InvalidValue :placeholder: number must be an integer >= 1", };
+      }
+      req_obj["number"] = number;
+    }
   } else {
     req_obj = parser.addArrayOfNumbersOrStringParams(req_obj, "radiuses", request_type);
   }

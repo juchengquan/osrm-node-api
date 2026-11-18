@@ -33,6 +33,18 @@ if(cluster.isPrimary){
 		`Cluster metrics server listening to ${process.env.MONITOR_PORT}, exposed on /metrics`,
   );
 
+  // As PID 1 in a container, node has no default SIGTERM/SIGINT handling, so
+  // `docker stop` would wait for its timeout and SIGKILL. Stop workers and exit.
+  const shutdown = (signal) => {
+    console.log(`Received ${signal}, stopping workers`);
+    for (const worker of Object.values(cluster.workers)) {
+      worker.kill("SIGTERM");
+    }
+    process.exit(0);
+  };
+  process.on("SIGTERM", shutdown);
+  process.on("SIGINT", shutdown);
+
 } else{
   runAppInstance();
 }
