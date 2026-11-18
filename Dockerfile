@@ -50,6 +50,8 @@ FROM debian:bookworm-slim AS runstage
 
 COPY --from=builder /usr/local /usr/local
 COPY --from=builder /osrm-backend/lib /osrm-backend/lib
+# upstream's lib/index.js reads ../package.json for OSRM.version
+COPY --from=builder /osrm-backend/package.json /osrm-backend/package.json
 COPY --from=builder /opt /opt
 
 RUN apt-get update && \
@@ -82,7 +84,6 @@ ENV DATASET_NAME=NAME_MONACO \
     TZ="Asia/Singapore" 
 
 WORKDIR /osrm-node-api
-RUN cp /osrm-node-api/backend_version_patch/index.js /osrm-backend/lib/
 
 EXPOSE 8080
 EXPOSE 9090

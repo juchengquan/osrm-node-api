@@ -29,8 +29,10 @@ A high-performance NodeJS server implementation for the [Open Source Routing Mac
 mkdir osrm-service && cd osrm-service
 # Create data folder
 mkdir -p osrm-data
-# Clone osrm-backend
-git clone https://github.com/Project-OSRM/osrm-backend.git
+# Clone osrm-backend at a release this Dockerfile can build. It uses Debian
+# bookworm's system Boost 1.81; releases after v6.0.0 (v26.x) need Boost >= 1.83
+# via vcpkg and do not build with it.
+git clone --depth 1 --branch v6.0.0 https://github.com/Project-OSRM/osrm-backend.git
 # Clone this repo
 git clone https://github.com/juchengquan/osrm-node-api.git
 # Create soft links
